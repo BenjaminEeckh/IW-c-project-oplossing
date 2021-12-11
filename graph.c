@@ -10,6 +10,7 @@ void edge_to_string(const edge_t *edge, char *str, unsigned size)
   assert(str != NULL);
   assert(size > 0);
   assert(edge != NULL);
+  printf("%d, %d, %d\n", edge->tail, edge->head, edge->weight);
   snprintf(str, size, " %d -> %d (%d)", edge->tail, edge->head, edge->weight);
 }
 
@@ -64,10 +65,11 @@ bool graph_initialise(graph_t *graph, unsigned vertex_count)
 {
   assert(graph != NULL);
   assert(vertex_count > 0);
-  graph->adjacency_lists = malloc((sizeof(adjacency_list_t *[vertex_count])));
-  // graph->edge_count = malloc(sizeof(unsigned));
-  // graph->vertex_count = malloc(sizeof(unsigned));
+  edge_t* array = (edge_t*) malloc(vertex_count * sizeof(edge_t));
+  graph->adjacency_lists = (adjacency_list_t*)array;
   graph->vertex_count = vertex_count;
+  graph->edge_count = 0;
+  // printf("%p, %ld\n", array, (long int)array);
   if (graph->adjacency_lists != NULL)
     return true;
   return false;
@@ -81,18 +83,16 @@ void graph_print(const graph_t *graph)
   for (int i = 0; i < graph->vertex_count; i++)
   {
     printf("vertex %d:\n", i);
-    edge_t *to_print = graph->adjacency_lists[i].first;
+    edge_t* to_print = &graph->adjacency_lists->first[i];
     // char print = "";
     while (to_print != NULL)
     {
-      if (to_print->tail == i)
-      {
-      char *p = "";
-        edge_to_string(to_print, p, 11);
-        printf("%s\n", p);
-      }
-
-      to_print = to_print->next;
+    char p[11];
+    edge_to_string(to_print, p, 13);
+    printf("%s\n", p);
+    printf("%p\n", to_print);
+    to_print = to_print->next;
+    printf("%p\n", to_print);
     }
   }
 }
